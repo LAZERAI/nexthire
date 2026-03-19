@@ -117,13 +117,13 @@ export default function CommunityPage() {
         </div>
 
         {/* Category Tabs */}
-        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-2 scrollbar-hide">
+        <div className="flex items-center gap-2 mb-10 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide">
           {CATEGORIES.map(cat => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
               className={cn(
-                "px-5 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap border",
+                "px-5 py-2 rounded-full text-sm font-semibold transition-all whitespace-nowrap border shrink-0",
                 activeCategory === cat 
                   ? "bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(0,112,243,0.1)]" 
                   : "bg-secondary/30 border-border text-muted-foreground hover:border-muted hover:text-white"

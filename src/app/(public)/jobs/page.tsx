@@ -39,6 +39,7 @@ const CODERZON_JOBS = [
 export default function JobsPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedJob, setSelectedJob] = useState<typeof CODERZON_JOBS[0] | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
   
   const filteredJobs = CODERZON_JOBS.filter(job => 
     job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -49,8 +50,8 @@ export default function JobsPage() {
     <div className="min-h-screen bg-background pt-8 pb-20">
       <div className="container mx-auto px-4">
         {/* Header & Search */}
-        <div className="max-w-4xl mx-auto mb-12">
-          <h1 className="text-3xl font-bold mb-6 text-white">Find Your Next Challenge</h1>
+        <div className="max-w-4xl mx-auto mb-8 md:mb-12">
+          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-white text-center md:text-left">Find Your Next Challenge</h1>
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors" size={20} />
             <input 
@@ -64,14 +65,25 @@ export default function JobsPage() {
         </div>
 
         <div className="flex flex-col lg:flex-row gap-8">
+          {/* Mobile Filter Toggle */}
+          <button 
+            className="lg:hidden flex items-center justify-center gap-2 w-full py-3 bg-secondary/30 border border-border rounded-lg text-white font-bold"
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter size={16} /> {showFilters ? "Hide Filters" : "Show Filters"}
+          </button>
+
           {/* Sidebar Filters */}
-          <aside className="lg:w-64 space-y-8">
+          <aside className={cn(
+            "lg:w-64 space-y-8 lg:block",
+            showFilters ? "block" : "hidden"
+          )}>
             <div>
-              <div className="flex items-center gap-2 font-bold mb-4 uppercase tracking-wider text-xs text-muted-foreground">
+              <div className="hidden lg:flex items-center gap-2 font-bold mb-4 uppercase tracking-wider text-xs text-muted-foreground">
                 <Filter size={14} /> Filters
               </div>
               
-              <div className="space-y-6">
+              <div className="space-y-6 bg-secondary/10 p-6 rounded-xl border border-border lg:bg-transparent lg:p-0 lg:border-none">
                 <FilterGroup title="Job Type" options={["Full-time", "Part-time", "Contract"]} selected="Full-time" />
                 <FilterGroup title="Work Mode" options={["Remote", "Hybrid", "Onsite"]} selected="Onsite" />
                 <FilterGroup title="Experience" options={["Entry", "Mid Level", "Senior"]} selected="Mid Level" />

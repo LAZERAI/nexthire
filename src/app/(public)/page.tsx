@@ -28,11 +28,11 @@ export default function LandingPage() {
             <span>Next-Gen Semantic Matching is here</span>
           </div>
           
-          <h1 className="text-5xl lg:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
+          <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-white/60">
             Hire and get hired <br className="hidden md:block" /> with precision AI.
           </h1>
           
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
             NexHire uses advanced vector embeddings to match the right talent with the perfect role. No keywords, just semantic understanding.
           </p>
           

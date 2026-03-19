@@ -89,7 +89,7 @@ export default function AIMatchPage() {
         </div>
 
         {/* Main Interaction Area */}
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
           {/* Left Column: Input */}
           <div className={cn(
