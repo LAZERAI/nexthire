@@ -267,19 +267,19 @@ export default function LandingPage() {
             <div>
               <h4 className="font-bold mb-6 text-white uppercase tracking-wider text-sm">Platform</h4>
               <ul className="space-y-4 text-muted-foreground font-medium">
-                <li className="hover:text-white cursor-pointer transition-colors">Jobs Board</li>
-                <li className="hover:text-white cursor-pointer transition-colors">AI Match</li>
-                <li className="hover:text-white cursor-pointer transition-colors">Community</li>
-                <li className="hover:text-white cursor-pointer transition-colors">Pricing</li>
+                <li><Link href="/jobs" className="hover:text-white transition-colors">Jobs Board</Link></li>
+                <li><Link href="/ai-match" className="hover:text-white transition-colors">AI Match</Link></li>
+                <li><Link href="/community" className="hover:text-white transition-colors">Community</Link></li>
+                <li><Link href="#" className="hover:text-white transition-colors">Pricing</Link></li>
               </ul>
             </div>
             
             <div>
               <h4 className="font-bold mb-6 text-white uppercase tracking-wider text-sm">Legal</h4>
               <ul className="space-y-4 text-muted-foreground font-medium">
-                <li className="hover:text-white cursor-pointer transition-colors">Privacy Policy</li>
-                <li className="hover:text-white cursor-pointer transition-colors">Terms of Service</li>
-                <li className="hover:text-white cursor-pointer transition-colors">Cookie Policy</li>
+                <li><Link href="#" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+                <li><Link href="#" className="hover:text-white transition-colors">Terms of Service</Link></li>
+                <li><Link href="#" className="hover:text-white transition-colors">Cookie Policy</Link></li>
               </ul>
             </div>
           </div>
