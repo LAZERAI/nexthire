@@ -1,3 +1,5 @@
+import Navbar from "@/components/layout/Navbar";
+
 export default function PublicLayout({
   children,
 }: {
@@ -5,9 +7,8 @@ export default function PublicLayout({
 }) {
   return (
     <div className="flex min-h-screen flex-col">
-      {/* Navbar will go here */}
+      <Navbar />
       <main className="flex-1">{children}</main>
-      {/* Footer will go here */}
     </div>
   );
 }
