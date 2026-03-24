@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { login, signInWithGoogle } from "../actions";
 import { ArrowRight, Loader2 } from "lucide-react";
-import { SubmitButton } from "@/components/ui/submit-button"; // I'll create this helper or just inline it
 
 export default function LoginPage({
   searchParams,

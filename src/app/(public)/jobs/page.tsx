@@ -13,9 +13,13 @@ import {
   Clock,
   BarChart3,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Loader2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { createClient } from "@/lib/supabase-client";
+import { useToast } from "@/components/ui/toast";
+import { useRouter } from "next/navigation";
 
 // Realistic Job Data
 const REAL_JOBS = [
@@ -178,16 +182,71 @@ const REAL_JOBS = [
 ];
 
 export default function JobsPage() {
+  const supabase = createClient();
+  const { toast } = useToast();
+  const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedJob, setSelectedJob] = useState<typeof REAL_JOBS[0] | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isApplying, setIsApplying] = useState(false);
+  const [user, setUser] = useState<any>(null);
   
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setIsLoading(false), 800);
+    checkUser();
     return () => clearTimeout(timer);
   }, []);
+
+  async function checkUser() {
+    const { data: { user } } = await supabase.auth.getUser();
+    setUser(user);
+  }
+
+  const handleApply = async () => {
+    if (!user) {
+      toast("Please sign in to apply for this job", "info");
+      router.push(`/login?returnUrl=/jobs`);
+      return;
+    }
+
+    if (!selectedJob) return;
+
+    setIsApplying(true);
+    try {
+      const { data: dbJobs } = await supabase.from('jobs').select('id').eq('title', selectedJob.title).limit(1);
+      const jobId = dbJobs?.[0]?.id;
+
+      if (!jobId) {
+        toast("This is a demo job listing. Real applications require a database job record.", "info");
+        return;
+      }
+
+      const { error } = await supabase
+        .from('applications')
+        .insert({
+          job_id: jobId,
+          candidate_id: user.id,
+          status: 'pending'
+        });
+
+      if (error) {
+        if (error.code === '23505') {
+          toast("You have already applied for this position.", "info");
+        } else {
+          throw error;
+        }
+      } else {
+        toast("Application submitted successfully!", "success");
+        setSelectedJob(null);
+      }
+    } catch (err: any) {
+      toast(err.message || "Failed to submit application", "error");
+    } finally {
+      setIsApplying(false);
+    }
+  };
 
   const filteredJobs = REAL_JOBS.filter(job => 
     job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -196,11 +255,11 @@ export default function JobsPage() {
   );
 
   return (
-    <div className="min-h-screen bg-background pt-8 pb-20">
+    <div className="min-h-screen bg-background pt-8 pb-20 page-transition">
       <div className="container mx-auto px-4">
         {/* Header & Search */}
-        <div className="max-w-4xl mx-auto mb-8 md:mb-12">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-foreground text-center md:text-left">
+        <div className="max-w-4xl mx-auto mb-8 md:mb-12 text-center md:text-left">
+          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-foreground">
             Find Your Next Challenge
           </h1>
           <div className="relative group">
@@ -215,7 +274,7 @@ export default function JobsPage() {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-8 text-foreground">
           {/* Mobile Filter Toggle */}
           <button 
             className="lg:hidden flex items-center justify-center gap-2 w-full py-3 bg-secondary/30 border border-border rounded-lg text-foreground font-bold hover:bg-secondary/50 transition-colors"
@@ -263,7 +322,6 @@ export default function JobsPage() {
             </div>
 
             {isLoading ? (
-              // Skeleton Loading
               Array.from({ length: 4 }).map((_, i) => (
                 <div key={i} className="p-6 rounded-xl border border-border bg-card animate-pulse">
                   <div className="flex gap-6">
@@ -292,8 +350,8 @@ export default function JobsPage() {
                     </div>
                     
                     <div className="flex-1">
-                      <div className="flex justify-between items-start">
-                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors mb-1">
+                      <div className="flex justify-between items-start text-foreground">
+                        <h3 className="text-xl font-bold group-hover:text-primary transition-colors mb-1">
                           {job.title}
                         </h3>
                         <span className="text-xs font-medium text-muted-foreground whitespace-nowrap">{job.postedAt}</span>
@@ -380,14 +438,14 @@ export default function JobsPage() {
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-bold text-foreground mb-4">About the Role</h3>
+                  <h3 className="text-lg font-bold text-foreground mb-4 font-bold">About the Role</h3>
                   <p className="text-muted-foreground leading-relaxed">
                     {selectedJob.description}
                   </p>
                 </div>
 
                 <div>
-                  <h3 className="text-lg font-bold text-foreground mb-4">Required Skills</h3>
+                  <h3 className="text-lg font-bold text-foreground mb-4 font-bold">Required Skills</h3>
                   <div className="flex flex-wrap gap-2">
                     {selectedJob.tags.map(tag => (
                       <span key={tag} className="px-3 py-1.5 rounded-md bg-secondary border border-border text-sm font-medium text-foreground">
@@ -412,8 +470,12 @@ export default function JobsPage() {
 
               {/* Drawer Footer */}
               <div className="p-6 border-t border-border bg-background sticky bottom-0 z-10 flex gap-4">
-                <button className="flex-1 bg-primary text-primary-foreground font-bold py-3.5 rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2">
-                  Apply Now <ChevronRight size={18} />
+                <button 
+                  onClick={handleApply}
+                  disabled={isApplying}
+                  className="flex-1 bg-primary text-primary-foreground font-bold py-3.5 rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                >
+                  {isApplying ? <Loader2 className="animate-spin" size={18} /> : <>Apply Now <ChevronRight size={18} /></>}
                 </button>
                 <button className="px-6 py-3.5 bg-secondary text-foreground font-bold rounded-xl border border-border hover:bg-secondary/80 transition-all">
                   Save
@@ -458,7 +520,7 @@ function FilterGroup({ title, options, selected }: { title: string, options: str
 function DetailStat({ icon, label, value }: { icon: React.ReactNode, label: string, value: string }) {
   return (
     <div className="p-4 rounded-xl bg-secondary/30 border border-border flex flex-col gap-2">
-      <div className="flex items-center gap-2 text-muted-foreground">
+      <div className="flex items-center gap-2 text-muted-foreground text-foreground">
         {icon}
         <span className="text-[10px] font-bold uppercase tracking-wider">{label}</span>
       </div>
