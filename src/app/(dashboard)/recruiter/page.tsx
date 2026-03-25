@@ -8,7 +8,8 @@ import {
   ArrowRight, 
   Search,
   Building2,
-  TrendingUp
+  TrendingUp,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 

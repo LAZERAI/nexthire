@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase-client";
-import { UploadCloud, X, Save, Loader2, User, MapPin, Briefcase, FileText, Github, Linkedin, Phone, Building2 } from "lucide-react";
+import { UploadCloud, X, Save, Loader2, User, MapPin, Briefcase, FileText, Github, Linkedin, Phone, Building2, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 
