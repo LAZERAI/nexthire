@@ -293,15 +293,15 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-border py-16 bg-black">
+      <footer className="border-t border-border py-16 bg-slate-100 dark:bg-black">
         <div className="container px-4 mx-auto">
           <div className="grid md:grid-cols-4 gap-12 mb-16">
             <div className="col-span-1 md:col-span-2">
               <div className="text-2xl font-bold text-primary mb-6">NexHire</div>
-              <p className="text-muted-foreground max-w-sm mb-8 leading-relaxed">
+              <p className="text-slate-600 dark:text-muted-foreground max-w-sm mb-8 leading-relaxed">
                 The modern standard for recruitment. Powered by semantic AI to bridge the gap between talent and innovation.
               </p>
-              <div className="flex gap-4 text-muted-foreground">
+              <div className="flex gap-4 text-slate-700 dark:text-muted-foreground">
                 <Twitter className="hover:text-primary cursor-pointer" />
                 <Github className="hover:text-primary cursor-pointer" />
                 <Linkedin className="hover:text-primary cursor-pointer" />
@@ -309,21 +309,21 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h4 className="footer-title font-bold mb-6 uppercase tracking-wider text-sm">Platform</h4>
-              <ul className="space-y-4 text-foreground font-medium">
-                <li><Link href="/jobs" className="text-foreground hover:text-primary transition-colors">Jobs Board</Link></li>
-                <li><Link href="/ai-match" className="text-foreground hover:text-primary transition-colors">AI Match</Link></li>
-                <li><Link href="/community" className="text-foreground hover:text-primary transition-colors">Community</Link></li>
-                <li><Link href="/pricing" className="text-foreground hover:text-primary transition-colors">Pricing</Link></li>
+              <h4 className="footer-title text-slate-900 dark:text-white font-bold mb-6 uppercase tracking-wider text-sm">Platform</h4>
+              <ul className="space-y-4 font-medium">
+                <li><Link href="/jobs" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Jobs Board</Link></li>
+                <li><Link href="/ai-match" className="text-slate-700 dark:text-white hover:text-primary transition-colors">AI Match</Link></li>
+                <li><Link href="/community" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Community</Link></li>
+                <li><Link href="/pricing" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Pricing</Link></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="footer-title font-bold mb-6 uppercase tracking-wider text-sm">Legal</h4>
-              <ul className="space-y-4 text-foreground font-medium">
-                <li><Link href="/privacy" className="text-foreground hover:text-primary transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-foreground hover:text-primary transition-colors">Terms of Service</Link></li>
-                <li><Link href="/cookies" className="text-foreground hover:text-primary transition-colors">Cookie Policy</Link></li>
+              <h4 className="footer-title text-slate-900 dark:text-white font-bold mb-6 uppercase tracking-wider text-sm">Legal</h4>
+              <ul className="space-y-4 font-medium">
+                <li><Link href="/privacy" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Terms of Service</Link></li>
+                <li><Link href="/cookies" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Cookie Policy</Link></li>
               </ul>
             </div>
           </div>
