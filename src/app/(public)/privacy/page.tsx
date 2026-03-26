@@ -41,9 +41,9 @@ export default function PrivacyPage() {
                 We collect information you provide directly to us when you create an account, upload a resume, or interact with our AI services. This includes:
               </p>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                <li>**Personal Information:** Name, email address, phone number, and location.</li>
-                <li>**Professional Data:** Resumes (PDF/DOCX), work history, skills, and education.</li>
-                <li>**Usage Data:** Interaction with job postings, search queries, and application history.</li>
+                <li><strong>Personal Information:</strong> Name, email address, phone number, and location.</li>
+                <li><strong>Professional Data:</strong> Resumes (PDF/DOCX), work history, skills, and education.</li>
+                <li><strong>Usage Data:</strong> Interaction with job postings, search queries, and application history.</li>
               </ul>
             </section>
 
@@ -105,10 +105,10 @@ export default function PrivacyPage() {
                 You maintain full ownership of your data. At any time, you can:
               </p>
               <ul className="list-disc list-inside space-y-2 text-muted-foreground ml-4">
-                <li>**Access:** Request a copy of all data we hold about you.</li>
-                <li>**Rectify:** Update or correct your profile information via the Dashboard.</li>
-                <li>**Delete:** Permanently delete your account and all associated data from our servers.</li>
-                <li>**Opt-out:** Disable AI processing for your profile (this will limit functionality).</li>
+                <li><strong>Access:</strong> Request a copy of all data we hold about you.</li>
+                <li><strong>Rectify:</strong> Update or correct your profile information via the Dashboard.</li>
+                <li><strong>Delete:</strong> Permanently delete your account and all associated data from our servers.</li>
+                <li><strong>Opt-out:</strong> Disable AI processing for your profile (this will limit functionality).</li>
               </ul>
             </section>
 

@@ -309,21 +309,22 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h4 className="font-bold mb-6 text-foreground uppercase tracking-wider text-sm">Platform</h4>
-              <ul className="space-y-4 text-muted-foreground font-medium">
-                <li><Link href="/jobs" className="hover:text-foreground transition-colors">Jobs Board</Link></li>
-                <li><Link href="/ai-match" className="hover:text-foreground transition-colors">AI Match</Link></li>
-                <li><Link href="/community" className="hover:text-foreground transition-colors">Community</Link></li>
-                <li><Link href="/pricing" className="hover:text-foreground transition-colors">Pricing</Link></li>
+              <div>
+              <h4 className="footer-title font-bold mb-6 uppercase tracking-wider text-sm">Platform</h4>
+              <ul className="space-y-4 text-foreground font-medium">
+                <li><Link href="/jobs" className="text-foreground hover:text-primary transition-colors">Jobs Board</Link></li>
+                <li><Link href="/ai-match" className="text-foreground hover:text-primary transition-colors">AI Match</Link></li>
+                <li><Link href="/community" className="text-foreground hover:text-primary transition-colors">Community</Link></li>
+                <li><Link href="/pricing" className="text-foreground hover:text-primary transition-colors">Pricing</Link></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="font-bold mb-6 text-foreground uppercase tracking-wider text-sm">Legal</h4>
-              <ul className="space-y-4 text-muted-foreground font-medium">
-                <li><Link href="/privacy" className="hover:text-foreground transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="hover:text-foreground transition-colors">Terms of Service</Link></li>
-                <li><Link href="/cookies" className="hover:text-foreground transition-colors">Cookie Policy</Link></li>
+              <h4 className="footer-title font-bold mb-6 uppercase tracking-wider text-sm">Legal</h4>
+              <ul className="space-y-4 text-foreground font-medium">
+                <li><Link href="/privacy" className="text-foreground hover:text-primary transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-foreground hover:text-primary transition-colors">Terms of Service</Link></li>
+                <li><Link href="/cookies" className="text-foreground hover:text-primary transition-colors">Cookie Policy</Link></li>
               </ul>
             </div>
           </div>

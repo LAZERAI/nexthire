@@ -68,7 +68,7 @@ export default function TermsPage() {
                 <h2 className="text-2xl font-bold text-foreground">3. User Accounts</h2>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                We offer two types of accounts: **Candidate** and **Recruiter**.
+                We offer two types of accounts: <strong>Candidate</strong> and <strong>Recruiter</strong>.
               </p>
               <div className="grid sm:grid-cols-2 gap-4 mt-4">
                 <div className="p-4 rounded-lg bg-secondary/10 border border-border">
@@ -103,7 +103,7 @@ export default function TermsPage() {
             <section id="ai-disclaimer" className="p-6 rounded-xl bg-primary/5 border border-primary/10">
               <h2 className="text-xl font-bold text-foreground mb-2">5. AI Features Disclaimer</h2>
               <p className="text-muted-foreground mb-4">
-                Our AI matching engine uses probabilistic models (LLMs and Vector Search) to suggest matches. While we strive for accuracy, **we do not guarantee** that:
+                Our AI matching engine uses probabilistic models (LLMs and Vector Search) to suggest matches. While we strive for accuracy, <strong>we do not guarantee</strong> that:
               </p>
               <ul className="list-disc list-inside space-y-1 text-muted-foreground text-sm">
                 <li>Every match will result in an interview or hire.</li>
@@ -120,7 +120,7 @@ export default function TermsPage() {
                 <h2 className="text-2xl font-bold text-foreground">6. Governing Law</h2>
               </div>
               <p className="text-muted-foreground leading-relaxed">
-                These Terms shall be governed by and defined following the laws of **India**. NexHire Inc. and yourself irrevocably consent that the courts of India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.
+                These Terms shall be governed by and defined following the laws of <strong>India</strong>. NexHire Inc. and yourself irrevocably consent that the courts of India shall have exclusive jurisdiction to resolve any dispute which may arise in connection with these terms.
               </p>
             </section>
           </main>
