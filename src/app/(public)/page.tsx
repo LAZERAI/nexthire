@@ -309,21 +309,21 @@ export default function LandingPage() {
             </div>
             
             <div>
-              <h4 className="footer-title text-slate-900 dark:text-white font-bold mb-6 uppercase tracking-wider text-sm">Platform</h4>
+              <h4 className="text-foreground dark:text-muted-foreground font-bold mb-6 uppercase tracking-wider text-sm">Platform</h4>
               <ul className="space-y-4 font-medium">
-                <li><Link href="/jobs" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Jobs Board</Link></li>
-                <li><Link href="/ai-match" className="text-slate-700 dark:text-white hover:text-primary transition-colors">AI Match</Link></li>
-                <li><Link href="/community" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Community</Link></li>
-                <li><Link href="/pricing" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Pricing</Link></li>
+                <li><Link href="/jobs" className="text-muted-foreground dark:text-muted-foreground hover:text-primary transition-colors">Jobs Board</Link></li>
+                <li><Link href="/ai-match" className="text-muted-foreground dark:text-muted-foreground hover:text-primary transition-colors">AI Match</Link></li>
+                <li><Link href="/community" className="text-muted-foreground dark:text-muted-foreground hover:text-primary transition-colors">Community</Link></li>
+                <li><Link href="/pricing" className="text-muted-foreground dark:text-muted-foreground hover:text-primary transition-colors">Pricing</Link></li>
               </ul>
             </div>
             
             <div>
-              <h4 className="footer-title text-slate-900 dark:text-white font-bold mb-6 uppercase tracking-wider text-sm">Legal</h4>
+              <h4 className="text-foreground dark:text-muted-foreground font-bold mb-6 uppercase tracking-wider text-sm">Legal</h4>
               <ul className="space-y-4 font-medium">
-                <li><Link href="/privacy" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Privacy Policy</Link></li>
-                <li><Link href="/terms" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Terms of Service</Link></li>
-                <li><Link href="/cookies" className="text-slate-700 dark:text-white hover:text-primary transition-colors">Cookie Policy</Link></li>
+                <li><Link href="/privacy" className="text-muted-foreground dark:text-muted-foreground hover:text-primary transition-colors">Privacy Policy</Link></li>
+                <li><Link href="/terms" className="text-muted-foreground dark:text-muted-foreground hover:text-primary transition-colors">Terms of Service</Link></li>
+                <li><Link href="/cookies" className="text-muted-foreground dark:text-muted-foreground hover:text-primary transition-colors">Cookie Policy</Link></li>
               </ul>
             </div>
           </div>
