@@ -2,18 +2,39 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Bot, Menu, X, Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "next-themes";
+import { createClient } from "@/lib/supabase-client";
 
 export default function Navbar() {
+  const router = useRouter();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState<any>(null);
 
   // Avoid hydration mismatch
   useEffect(() => {
     setMounted(true);
+
+    const supabase = createClient();
+
+    const loadUser = async () => {
+      const { data } = await supabase.auth.getSession();
+      setUser(data.session?.user ?? null);
+    };
+
+    loadUser();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, []);
 
   return (
@@ -51,19 +72,43 @@ export default function Navbar() {
             </button>
           )}
 
-          <Link 
-            href="/login" 
-            className="hidden sm:inline-flex text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
-          >
-            Log in
-          </Link>
-          <Link 
-            href="/signup" 
-            className="hidden sm:inline-flex px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-md hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.4)]"
-          >
-            Get Started
-          </Link>
-          <button 
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="hidden sm:inline-flex text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={async () => {
+                  const supabase = createClient();
+                  await supabase.auth.signOut();
+                  setUser(null);
+                  router.push('/login');
+                }}
+                className="hidden sm:inline-flex px-4 py-2 bg-destructive text-white text-sm font-bold rounded-md hover:bg-destructive/90 transition-colors shadow-[0_0_15px_rgba(220,38,38,0.35)]"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="hidden sm:inline-flex text-sm font-medium text-muted-foreground hover:text-primary transition-colors"
+              >
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="hidden sm:inline-flex px-4 py-2 bg-primary text-primary-foreground text-sm font-bold rounded-md hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.4)]"
+              >
+                Get Started
+              </Link>
+            </>
+          )}
+          <button
             className="md:hidden p-2 text-muted-foreground hover:text-foreground transition-colors"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           >
@@ -102,20 +147,46 @@ export default function Navbar() {
             AI Match
           </Link>
           <div className="h-px bg-border my-2" />
-          <Link 
-            href="/login" 
-            className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Log in
-          </Link>
-          <Link 
-            href="/signup" 
-            className="text-sm font-bold text-primary hover:text-primary/80 transition-colors py-2"
-            onClick={() => setIsMobileMenuOpen(false)}
-          >
-            Get Started
-          </Link>
+          {user ? (
+            <>
+              <Link
+                href="/dashboard"
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Dashboard
+              </Link>
+              <button
+                onClick={async () => {
+                  const supabase = createClient();
+                  await supabase.auth.signOut();
+                  setUser(null);
+                  setIsMobileMenuOpen(false);
+                  router.push('/login');
+                }}
+                className="text-left text-sm font-bold text-destructive hover:text-destructive/80 transition-colors py-2"
+              >
+                Sign out
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className="text-sm font-medium text-muted-foreground hover:text-primary transition-colors py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Log in
+              </Link>
+              <Link
+                href="/signup"
+                className="text-sm font-bold text-primary hover:text-primary/80 transition-colors py-2"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                Get Started
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

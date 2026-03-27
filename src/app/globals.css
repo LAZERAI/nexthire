@@ -23,6 +23,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
 
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
@@ -51,6 +54,8 @@
   --border: #e2e8f0;
   --input: #e2e8f0;
   --ring: #2563eb;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
   
   --radius: 0.5rem;
 }
@@ -78,6 +83,8 @@
   --border: #27272a;
   --input: #27272a;
   --ring: #3b82f6;
+  --card: #111827;
+  --card-foreground: #f8fafc;
 }
 
 @layer base {
