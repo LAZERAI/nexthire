@@ -1,10 +1,23 @@
 import { NextResponse } from "next/server";
 
+type InsightJob = {
+  id: string;
+  title?: string;
+  description?: string;
+  company?: string | null;
+  company_name?: string | null;
+  companies?: {
+    name?: string | null;
+  } | null;
+  skills_required?: string[] | null;
+};
+
 export async function POST(request: Request) {
   try {
     const { resumeText, jobs } = await request.json();
+    const insightJobs: InsightJob[] = Array.isArray(jobs) ? jobs : [];
 
-    if (!resumeText || !jobs || jobs.length === 0) {
+    if (!resumeText || insightJobs.length === 0) {
       return NextResponse.json({ error: "Missing resume or jobs" }, { status: 400 });
     }
 
@@ -15,8 +28,8 @@ export async function POST(request: Request) {
       Resume: "${resumeText.substring(0, 4000)}"
       
       Jobs to analyze:
-      ${jobs.map((j: any, i: number) => `
-        Job ${i+1}: ${j.title} at ${j.company}
+      ${insightJobs.map((j, i) => `
+        Job ${i+1}: ${j.title} at ${j.company || j.company_name || j.companies?.name || "Unknown Company"}
         Description: ${j.description}
         Skills: ${j.skills_required?.join(", ")}
       `).join('\n')}
@@ -58,7 +71,7 @@ export async function POST(request: Request) {
     const content = JSON.parse(result.choices[0].message.content);
 
     return NextResponse.json(content);
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AI Insights error:", error);
     return NextResponse.json(
       { error: "Failed to generate AI insights" },

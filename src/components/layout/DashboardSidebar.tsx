@@ -35,7 +35,7 @@ export default function DashboardSidebar({ user }: { user: UserProfile }) {
   const candidateLinks = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
     { href: "/applications", label: "My Applications", icon: FileText },
-    { href: "/ai-match", label: "AI Match", icon: Sparkles },
+    { href: "/dashboard/ai-match", label: "AI Match", icon: Sparkles },
     { href: "/community", label: "Community", icon: Users },
     { href: "/profile", label: "Profile", icon: User },
   ];

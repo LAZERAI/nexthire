@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 const FALLBACK_JOBS = [
   {
@@ -108,12 +108,32 @@ const FALLBACK_JOBS = [
   },
 ];
 
-async function fetchStaticJobs(supabase: any, limit = 5) {
+type MatchJobRow = {
+  id: string;
+  title: string;
+  company?: string | null;
+  company_name?: string | null;
+  company_logo?: string | null;
+  company_website?: string | null;
+  company_id?: string | null;
+  location: string | null;
+  salary_range: string | null;
+  job_type: string | null;
+  experience_level: string | null;
+  work_mode: string | null;
+  skills_required: string[] | null;
+  similarity?: number;
+  description: string;
+};
+
+type EnrichableJob = MatchJobRow;
+
+async function fetchStaticJobs(supabase: SupabaseClient, limit = 5) {
   try {
     const { data } = await supabase
       .from("jobs")
       .select(
-        "id, title, location, salary_range, job_type, experience_level, work_mode, skills_required, company_id"
+        "id, title, description, location, salary_range, job_type, experience_level, work_mode, skills_required, company_id"
       )
       .limit(limit);
 
@@ -127,6 +147,45 @@ async function fetchStaticJobs(supabase: any, limit = 5) {
   return FALLBACK_JOBS.slice(0, limit);
 }
 
+async function enrichJobsWithCompanies(supabase: SupabaseClient, jobs: EnrichableJob[]) {
+  type CompanyRow = {
+    id: string;
+    name: string | null;
+    logo_url: string | null;
+    website: string | null;
+  };
+
+  const companyIds = Array.from(new Set(
+    jobs
+      .map((job) => job.company_id)
+      .filter(Boolean)
+  ));
+
+  if (companyIds.length === 0) {
+    return jobs;
+  }
+
+  const { data: companies } = await supabase
+    .from("companies")
+    .select("id, name, logo_url, website")
+    .in("id", companyIds);
+
+  const companyRows = (companies || []) as CompanyRow[];
+  const companyMap = new Map(companyRows.map((company) => [company.id, company]));
+
+  return jobs.map((job) => {
+    const company = job.company_id ? companyMap.get(job.company_id) : undefined;
+
+    return {
+      ...job,
+      company: job.company || company?.name || "Unknown Company",
+      company_name: company?.name || job.company || "Unknown Company",
+      company_logo: company?.logo_url || null,
+      company_website: company?.website || null,
+    };
+  });
+}
+
 export async function POST(request: Request) {
   try {
     const { embedding } = await request.json();
@@ -136,7 +195,7 @@ export async function POST(request: Request) {
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
     );
 
-    let matches: any[] = [];
+    let matches: EnrichableJob[] = [];
     let warning: string | null = null;
 
     if (Array.isArray(embedding) && embedding.length > 0) {
@@ -163,8 +222,10 @@ export async function POST(request: Request) {
       warning = warning || "No semantic matches found; showing available jobs.";
     }
 
+    matches = await enrichJobsWithCompanies(supabase, matches);
+
     return NextResponse.json({ matches, warning });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Match error:", error);
     return NextResponse.json({ matches: FALLBACK_JOBS.slice(0, 5), warning: "An error occurred while matching jobs; showing fallback jobs." });
   }
