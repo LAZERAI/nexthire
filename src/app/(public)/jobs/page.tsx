@@ -178,6 +178,84 @@ const REAL_JOBS = [
     postedAt: "1 week ago", 
     tags: ["Flutter", "Dart", "iOS", "Android", "Firebase"], 
     description: "Develop cross-platform mobile applications using Flutter. You will be responsible for building smooth UIs and integrating with backend APIs. Experience publishing apps to the App Store and Play Store is expected." 
+  },
+  { 
+    id: "13", 
+    title: "Platform Engineer", 
+    company: "InfraPilot", 
+    location: "Kochi, Kerala", 
+    salary: "₹12 LPA - ₹20 LPA", 
+    type: "Full-time", 
+    mode: "Remote", 
+    level: "Senior", 
+    postedAt: "8 hours ago", 
+    tags: ["Terraform", "Kubernetes", "AWS", "Observability", "CI/CD"], 
+    description: "Own the internal platform that powers deployments, observability, and environment consistency. You will work closely with product engineers to reduce friction and improve developer velocity. Experience with IaC, cloud networking, and service reliability is required." 
+  },
+  { 
+    id: "14", 
+    title: "QA Automation Engineer", 
+    company: "TestRail Labs", 
+    location: "Trivandrum, Kerala", 
+    salary: "₹6 LPA - ₹11 LPA", 
+    type: "Full-time", 
+    mode: "Hybrid", 
+    level: "Mid Level", 
+    postedAt: "Just now", 
+    tags: ["Playwright", "Jest", "CI/CD", "Automation", "QA"], 
+    description: "Help us build a reliable automation suite for web and API testing. You will design test coverage for high-value user flows, reduce flaky tests, and collaborate with frontend and backend teams on release confidence. Strong browser automation experience is a plus." 
+  },
+  { 
+    id: "15", 
+    title: "Security Engineer", 
+    company: "FortGuard", 
+    location: "Remote", 
+    salary: "₹14 LPA - ₹24 LPA", 
+    type: "Full-time", 
+    mode: "Remote", 
+    level: "Senior", 
+    postedAt: "2 days ago", 
+    tags: ["AppSec", "OWASP", "Threat Modeling", "Cloud Security", "Zero Trust"], 
+    description: "Partner with engineering teams to harden products and shipping workflows. This role focuses on threat modeling, secure architecture reviews, and practical remediation. You should be comfortable balancing speed with security controls in a fast-moving product team." 
+  },
+  { 
+    id: "16", 
+    title: "DevRel / Community Engineer", 
+    company: "StackCircle", 
+    location: "Kochi, Kerala", 
+    salary: "₹8 LPA - ₹14 LPA", 
+    type: "Full-time", 
+    mode: "Hybrid", 
+    level: "Mid Level", 
+    postedAt: "4 days ago", 
+    tags: ["Developer Relations", "Content", "Speaking", "Open Source"], 
+    description: "Build programs, tutorials, and community content that help developers adopt our platform. You will create sample apps, answer technical questions, and represent the product at events. This role blends product empathy with strong communication skills." 
+  },
+  { 
+    id: "17", 
+    title: "Senior Data Scientist", 
+    company: "InsightForge", 
+    location: "Bengaluru, Karnataka", 
+    salary: "₹18 LPA - ₹28 LPA", 
+    type: "Full-time", 
+    mode: "Hybrid", 
+    level: "Senior", 
+    postedAt: "6 hours ago", 
+    tags: ["Python", "Statistics", "SQL", "A/B Testing", "LLMs"], 
+    description: "Turn product and business data into decisions. You will design experiments, build predictive models, and communicate findings clearly to leadership. The ideal candidate can balance rigorous analysis with practical product thinking." 
+  },
+  { 
+    id: "18", 
+    title: "Lead Mobile Engineer", 
+    company: "Appify", 
+    location: "Kochi, Kerala", 
+    salary: "₹15 LPA - ₹22 LPA", 
+    type: "Full-time", 
+    mode: "Onsite", 
+    level: "Senior", 
+    postedAt: "1 day ago", 
+    tags: ["Flutter", "iOS", "Android", "Architecture", "Firebase"], 
+    description: "Own the mobile roadmap for a consumer app used at scale. You will guide architecture decisions, mentor engineers, and ship polished experiences across iOS and Android. Experience leading mobile releases and performance tuning is important." 
   }
 ];
 

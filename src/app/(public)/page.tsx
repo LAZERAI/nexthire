@@ -137,7 +137,7 @@ export default function LandingPage() {
             </div>
           </ScrollReveal>
           
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
             {[
               {
                 title: "Senior Frontend Engineer",
@@ -162,6 +162,30 @@ export default function LandingPage() {
                 salary: "$150k - $210k",
                 type: "Contract",
                 tags: ["Rust", "Postgres", "Go"]
+              },
+              {
+                title: "Platform Engineer",
+                company: "InfraPilot",
+                location: "Remote",
+                salary: "$135k - $185k",
+                type: "Full-time",
+                tags: ["Terraform", "Kubernetes", "AWS"]
+              },
+              {
+                title: "QA Automation Engineer",
+                company: "TestRail Labs",
+                location: "Hybrid (London)",
+                salary: "$110k - $150k",
+                type: "Full-time",
+                tags: ["Playwright", "CI/CD", "Jest"]
+              },
+              {
+                title: "DevRel / Community Engineer",
+                company: "StackCircle",
+                location: "Kochi",
+                salary: "$95k - $140k",
+                type: "Full-time",
+                tags: ["Content", "Open Source", "Speaking"]
               }
             ].map((job, i) => (
               <ScrollReveal key={i} delay={i * 100}>
@@ -253,6 +277,22 @@ export default function LandingPage() {
                       title: "Hiring AI Engineers @ Coderzon",
                       content: "We're looking for engineers passionate about LLMs. Apply through NexHire for priority review.",
                       likes: 89
+                    },
+                    {
+                      author: "Neha Varma",
+                      reputation: "Top Contributor",
+                      timestamp: "8h ago",
+                      title: "What actually gets replies from recruiters",
+                      content: "Clear headlines, concrete metrics, and a short story about impact beat a polished but vague profile every time.",
+                      likes: 61
+                    },
+                    {
+                      author: "Priya Lakshmi",
+                      reputation: "Recruiter",
+                      timestamp: "12h ago",
+                      title: "Interview loops should be shorter",
+                      content: "Candidates are far more responsive when the process is transparent and the next step is obvious. More companies should simplify this.",
+                      likes: 73
                     }
                   ].map((post, i) => (
                     <div key={i} className="p-6 rounded-xl border border-border bg-background shadow-lg hover:border-primary/30 transition-all hover-lift">

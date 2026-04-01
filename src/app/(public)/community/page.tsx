@@ -16,13 +16,127 @@ import {
   Heart,
   Flame,
   X,
-  Lock
+  Lock,
+  Send
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase-client";
 
 const CATEGORIES = ["All", "Hiring", "Career Tips", "Industry News"];
+
+type CommunityComment = {
+  id: string;
+  author: string;
+  role: string;
+  timestamp: string;
+  content: string;
+};
+
+type CommunityPost = {
+  id: string;
+  author: string;
+  role: string;
+  reputation: string;
+  timestamp: string;
+  title: string;
+  content: string;
+  reactions: { like: number; heart: number; fire: number; discuss: number };
+  category: string;
+  initials: string;
+  color: string;
+};
+
+const COMMENT_TEMPLATES: Record<string, Array<Omit<CommunityComment, "id">>> = {
+  "AI/ML Engineering": [
+    {
+      author: "Akhil Menon",
+      role: "Platform Engineer",
+      timestamp: "18m ago",
+      content: "Solid breakdown on the RAG stack. The caching piece is the part most teams miss.",
+    },
+    {
+      author: "Sara Nair",
+      role: "Data Scientist",
+      timestamp: "41m ago",
+      content: "Did you test reranking before FAISS? Curious where the biggest win came from.",
+    },
+    {
+      author: "Vivek R",
+      role: "ML Ops Engineer",
+      timestamp: "1h ago",
+      content: "Incremental indexing is the difference between a prototype and something people actually use.",
+    },
+  ],
+  "Career Tips": [
+    {
+      author: "Neha Varma",
+      role: "Senior Developer",
+      timestamp: "22m ago",
+      content: "The negotiation framing here feels realistic. Lead with impact, not entitlement.",
+    },
+    {
+      author: "Sandeep Jose",
+      role: "Tech Lead",
+      timestamp: "49m ago",
+      content: "Agree on benchmarking against national roles. Local market rates lag unless people push back.",
+    },
+    {
+      author: "Ananya P",
+      role: "Product Analyst",
+      timestamp: "2h ago",
+      content: "Impact metrics always help. Numbers make a huge difference in interviews.",
+    },
+  ],
+  "Industry News": [
+    {
+      author: "Meera Krishnan",
+      role: "Hiring Manager",
+      timestamp: "28m ago",
+      content: "We’re seeing the same trend in our hiring pipeline. The Kerala market is getting much stronger.",
+    },
+    {
+      author: "Rohan Das",
+      role: "Founder",
+      timestamp: "55m ago",
+      content: "This matches the momentum we’re seeing around AI and infra roles.",
+    },
+    {
+      author: "Fathima A",
+      role: "Community Lead",
+      timestamp: "1h ago",
+      content: "Good summary. More companies should share local hiring data like this.",
+    },
+  ],
+  Hiring: [
+    {
+      author: "Priya Lakshmi",
+      role: "Recruiter",
+      timestamp: "35m ago",
+      content: "Worth sharing the interview loop and compensation range to make this more actionable.",
+    },
+    {
+      author: "Nikhil Thomas",
+      role: "Full Stack Engineer",
+      timestamp: "1h ago",
+      content: "This looks promising. Is remote or hybrid on the table?",
+    },
+    {
+      author: "Asha Menon",
+      role: "Candidate Experience",
+      timestamp: "2h ago",
+      content: "Thanks for posting the stack early. That saves everyone time.",
+    },
+  ],
+};
+
+function createCommentThread(postId: string, category: string): CommunityComment[] {
+  const templates = COMMENT_TEMPLATES[category] ?? COMMENT_TEMPLATES["Industry News"];
+  return templates.map((comment, index) => ({
+    ...comment,
+    id: `${postId}-${index}`,
+  }));
+}
 
 const SAMPLE_POSTS = [
   {
@@ -154,18 +268,77 @@ const SAMPLE_POSTS = [
     category: "Hiring",
     initials: "SS",
     color: "bg-red-500/20 text-red-500"
+  },
+  {
+    id: "11",
+    author: "Arjun Nair",
+    role: "Platform Engineer",
+    reputation: "Expert",
+    timestamp: "12h ago",
+    title: "How we reduced deployment time from 18 minutes to 4",
+    content: "The biggest win came from trimming our Docker layers, caching dependencies properly, and moving repeatable checks earlier in the pipeline. We also split preview builds from release builds so developers get feedback faster without blocking the whole team. Small ops changes made a huge difference in our delivery speed.",
+    reactions: { like: 74, heart: 29, fire: 16, discuss: 18 },
+    category: "Industry News",
+    initials: "AN",
+    color: "bg-indigo-500/20 text-indigo-500"
+  },
+  {
+    id: "12",
+    author: "Maya Pillai",
+    role: "Career Coach",
+    reputation: "Top Contributor",
+    timestamp: "16h ago",
+    title: "Interview prep that actually helps candidates land offers",
+    content: "A lot of people study random questions and still freeze in interviews. I tell candidates to build a story bank: one product story, one conflict story, one bug story, one collaboration story, and one mistake story. Once those are sharp, the interview feels like a conversation instead of a quiz.",
+    reactions: { like: 88, heart: 35, fire: 20, discuss: 24 },
+    category: "Career Tips",
+    initials: "MP",
+    color: "bg-yellow-500/20 text-yellow-500"
+  },
+  {
+    id: "13",
+    author: "Coderzon Talent Team",
+    role: "Hiring Team",
+    reputation: "Verified Company",
+    timestamp: "20h ago",
+    title: "Now hiring: React + Product-minded frontend engineers",
+    content: "We’re opening 3 roles for frontend engineers who care about performance, accessibility, and design polish. The team ships fast, reviews carefully, and values clean communication. Hybrid roles available for candidates based in Kerala.",
+    reactions: { like: 59, heart: 18, fire: 7, discuss: 12 },
+    category: "Hiring",
+    initials: "CT",
+    color: "bg-blue-500/20 text-blue-500"
+  },
+  {
+    id: "14",
+    author: "Riya Varghese",
+    role: "Startup Founder",
+    reputation: "Industry News",
+    timestamp: "1d ago",
+    title: "Why smaller teams are shipping AI features faster in 2026",
+    content: "Smaller product teams are using off-the-shelf models, thinner orchestration layers, and simpler UX patterns to ship AI features without drowning in complexity. The companies that win are not necessarily the ones with the biggest models, but the ones with the clearest workflows and the fastest feedback loops.",
+    reactions: { like: 102, heart: 41, fire: 23, discuss: 15 },
+    category: "Industry News",
+    initials: "RV",
+    color: "bg-green-500/20 text-green-500"
   }
 ];
 
+const INITIAL_COMMENT_THREADS: Record<string, CommunityComment[]> = Object.fromEntries(
+  SAMPLE_POSTS.map(post => [post.id, createCommentThread(post.id, post.category)])
+);
+
 export default function CommunityPage() {
   const [activeCategory, setActiveCategory] = useState("All");
-  const [posts, setPosts] = useState(SAMPLE_POSTS);
-  const [selectedPost, setSelectedPost] = useState<typeof SAMPLE_POSTS[0] | null>(null);
+  const [posts, setPosts] = useState<CommunityPost[]>(SAMPLE_POSTS);
+  const [selectedPost, setSelectedPost] = useState<CommunityPost | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [userReactions, setUserReactions] = useState<Record<string, string[]>>({});
   const [expandedPostIds, setExpandedPostIds] = useState<string[]>([]);
   const [loggedInUser, setLoggedInUser] = useState<any>(null);
   const [isCreatingPost, setIsCreatingPost] = useState(false);
+  const [isPostingComment, setIsPostingComment] = useState(false);
+  const [commentDraft, setCommentDraft] = useState("");
+  const [commentThreads, setCommentThreads] = useState<Record<string, CommunityComment[]>>(INITIAL_COMMENT_THREADS);
   const [newPostTitle, setNewPostTitle] = useState("");
   const [newPostContent, setNewPostContent] = useState("");
   const [newPostCategory, setNewPostCategory] = useState("Industry News");
@@ -214,6 +387,7 @@ export default function CommunityPage() {
       };
 
       setPosts(prev => [newPost, ...prev]);
+      setCommentThreads(prev => ({ ...prev, [newPost.id]: [] }));
       setNewPostTitle("");
       setNewPostContent("");
       setNewPostCategory("Industry News");
@@ -223,6 +397,37 @@ export default function CommunityPage() {
     } finally {
       setIsCreatingPost(false);
     }
+  };
+
+  const handleAddComment = async () => {
+    if (!selectedPost || !loggedInUser || !commentDraft.trim()) {
+      return;
+    }
+
+    setIsPostingComment(true);
+
+    const nextComment: CommunityComment = {
+      id: `${selectedPost.id}-${Date.now()}`,
+      author: loggedInUser.user_metadata?.full_name || loggedInUser.email?.split("@")[0] || "You",
+      role: "Community Member",
+      timestamp: "Just now",
+      content: commentDraft.trim(),
+    };
+
+    setCommentThreads(prev => ({
+      ...prev,
+      [selectedPost.id]: [...(prev[selectedPost.id] || []), nextComment],
+    }));
+
+    setPosts(prev => prev.map(post => (
+      post.id === selectedPost.id
+        ? { ...post, reactions: { ...post.reactions, discuss: post.reactions.discuss + 1 } }
+        : post
+    )));
+
+    setSelectedPost(prev => prev ? { ...prev, reactions: { ...prev.reactions, discuss: prev.reactions.discuss + 1 } } : prev);
+    setCommentDraft("");
+    setIsPostingComment(false);
   };
 
 
@@ -386,8 +591,16 @@ export default function CommunityPage() {
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <button className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-secondary">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setSelectedPost(post);
+                      setCommentDraft("");
+                    }}
+                    className="flex items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-secondary"
+                  >
                     <MessageSquare size={18} />
+                    <span>Comments</span>
                     <span>{post.reactions.discuss}</span>
                   </button>
                   <button className="p-2 text-muted-foreground hover:text-primary transition-colors rounded hover:bg-secondary">
@@ -446,15 +659,63 @@ export default function CommunityPage() {
               </div>
 
               <div className="pt-6 border-t border-border">
-                <h3 className="font-bold text-foreground mb-4 flex items-center gap-2">
-                  <MessageSquare size={18} /> Discussion ({selectedPost.reactions.discuss})
-                </h3>
-                <div className="bg-secondary/20 rounded-xl p-8 text-center border border-border border-dashed">
-                  <p className="text-muted-foreground mb-4">Sign in to join the conversation.</p>
-                  <Link href="/login" className="px-6 py-2 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-all inline-block">
-                    Log In
-                  </Link>
+                <div className="flex items-center justify-between gap-4 mb-4">
+                  <h3 className="font-bold text-foreground flex items-center gap-2">
+                    <MessageSquare size={18} /> Discussion ({selectedPost.reactions.discuss})
+                  </h3>
+                  <span className="text-xs text-muted-foreground">Visible to everyone, replies need an account.</span>
                 </div>
+
+                <div className="space-y-3 mb-5 max-h-72 overflow-y-auto pr-1">
+                  {(commentThreads[selectedPost.id] || []).length > 0 ? (
+                    (commentThreads[selectedPost.id] || []).map((comment) => (
+                      <div key={comment.id} className="rounded-xl border border-border bg-secondary/10 p-4">
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <div>
+                            <div className="font-semibold text-foreground text-sm">{comment.author}</div>
+                            <div className="text-[11px] uppercase tracking-wider text-muted-foreground">{comment.role} • {comment.timestamp}</div>
+                          </div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-primary/80">Reply</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground leading-relaxed">{comment.content}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="bg-secondary/20 rounded-xl p-6 text-center border border-border border-dashed">
+                      <p className="text-muted-foreground">No comments yet. Be the first to reply.</p>
+                    </div>
+                  )}
+                </div>
+
+                {loggedInUser ? (
+                  <div className="space-y-3">
+                    <textarea
+                      value={commentDraft}
+                      onChange={(e) => setCommentDraft(e.target.value)}
+                      placeholder="Write a thoughtful reply..."
+                      className="w-full min-h-28 px-4 py-3 border border-border rounded-xl bg-background text-foreground resize-none focus:outline-none focus:ring-2 focus:ring-primary/40"
+                    />
+                    <div className="flex items-center justify-between gap-3">
+                      <p className="text-xs text-muted-foreground">Keep it helpful, specific, and natural.</p>
+                      <button
+                        type="button"
+                        onClick={handleAddComment}
+                        disabled={!commentDraft.trim() || isPostingComment}
+                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-all disabled:opacity-60"
+                      >
+                        <Send size={16} />
+                        {isPostingComment ? "Posting..." : "Post Comment"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="bg-secondary/20 rounded-xl p-6 text-center border border-border border-dashed">
+                    <p className="text-muted-foreground mb-4">Sign in to add your own comment.</p>
+                    <Link href="/login" className="px-6 py-2 bg-primary text-primary-foreground font-bold rounded-lg hover:bg-primary/90 transition-all inline-block">
+                      Log In
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
           </div>

@@ -105,8 +105,8 @@ export default async function DashboardPage() {
         />
         <StatCard 
           icon={<Eye />} 
-          label="Profile Views" 
-          value={42} 
+          label="Profile Completion" 
+          value={`${completionPercent}%`} 
           color="text-purple-500 bg-purple-500/10 border-purple-500/20"
         />
         <StatCard 
