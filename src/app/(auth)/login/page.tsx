@@ -1,3 +1,6 @@
+"use client";
+
+import { use } from "react";
 import Link from "next/link";
 import { login, signInWithGoogle } from "../actions";
 import { ArrowRight, Loader2 } from "lucide-react";
@@ -5,8 +8,10 @@ import { ArrowRight, Loader2 } from "lucide-react";
 export default function LoginPage({
   searchParams,
 }: {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }) {
+  const resolvedSearchParams = use(searchParams);
+
   return (
     <div className="w-full max-w-md animate-fade-in-up">
       <div className="text-center mb-8">
@@ -52,9 +57,9 @@ export default function LoginPage({
             </div>
           </div>
 
-          {searchParams.error && (
+          {resolvedSearchParams.error && (
             <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium text-center">
-              {searchParams.error}
+              {resolvedSearchParams.error}
             </div>
           )}
 

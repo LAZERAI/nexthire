@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import { useState } from "react";
 import Link from "next/link";
 import { signup, signInWithGoogle } from "../actions";
@@ -9,9 +10,10 @@ import { cn } from "@/lib/utils";
 export default function SignupPage({
   searchParams,
 }: {
-  searchParams: { error?: string };
+  searchParams: Promise<{ error?: string }>;
 }) {
   const [role, setRole] = useState<"candidate" | "recruiter">("candidate");
+  const resolvedSearchParams = use(searchParams);
 
   return (
     <div className="w-full max-w-md animate-fade-in-up">
@@ -134,9 +136,9 @@ export default function SignupPage({
             </div>
           </div>
 
-          {searchParams.error && (
+          {resolvedSearchParams.error && (
             <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium text-center">
-              {searchParams.error}
+              {resolvedSearchParams.error}
             </div>
           )}
 

@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
+import { getSupabaseConfig } from "@/lib/supabase-config";
+
 const FALLBACK_JOBS = [
   {
     id: "f0000001",
@@ -189,11 +191,9 @@ async function enrichJobsWithCompanies(supabase: SupabaseClient, jobs: Enrichabl
 export async function POST(request: Request) {
   try {
     const { embedding } = await request.json();
+    const { supabaseUrl, supabaseKey } = getSupabaseConfig();
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    );
+    const supabase = createClient(supabaseUrl, supabaseKey);
 
     let matches: EnrichableJob[] = [];
     let warning: string | null = null;

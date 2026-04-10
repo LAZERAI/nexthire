@@ -14,8 +14,168 @@ import {
   Linkedin
 } from "lucide-react";
 import { ScrollReveal } from "@/components/ui/ScrollReveal";
+import { createClient as createSupabaseClient } from "@/lib/supabase-server";
 
-export default function LandingPage() {
+type LandingJobCompany = {
+  name: string | null;
+  logo_url: string | null;
+  website: string | null;
+};
+
+type LandingJobRow = {
+  title: string;
+  location: string | null;
+  salary_range: string | null;
+  job_type: string | null;
+  skills_required: string[] | null;
+  companies: LandingJobCompany | LandingJobCompany[] | null;
+};
+
+type LandingPostAuthor = {
+  full_name: string | null;
+  headline: string | null;
+  current_role: string | null;
+  role: string | null;
+};
+
+type LandingPostRow = {
+  title: string | null;
+  content: string;
+  helpful_count: number | null;
+  created_at: string;
+  author: LandingPostAuthor | LandingPostAuthor[] | null;
+};
+
+type FeaturedJob = {
+  title: string;
+  company: string;
+  location: string;
+  salary: string;
+  type: string;
+  tags: string[];
+};
+
+type CommunityPreviewPost = {
+  author: string;
+  reputation: string;
+  timestamp: string;
+  title: string;
+  content: string;
+  likes: number;
+};
+
+function normalizeRelation<T>(relation: T | T[] | null | undefined): T | null {
+  if (!relation) {
+    return null;
+  }
+
+  return Array.isArray(relation) ? relation[0] ?? null : relation;
+}
+
+function prettifyLabel(value: string | null) {
+  if (!value) {
+    return "Unknown";
+  }
+
+  return value
+    .split(/[-_\s]+/)
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase() + part.slice(1))
+    .join(" ");
+}
+
+function formatRelativeTime(dateString: string) {
+  const createdAt = new Date(dateString);
+  if (Number.isNaN(createdAt.getTime())) {
+    return "Just now";
+  }
+
+  const elapsedSeconds = Math.max(0, Math.floor((Date.now() - createdAt.getTime()) / 1000));
+  if (elapsedSeconds < 60) {
+    return `${Math.max(1, elapsedSeconds)}s ago`;
+  }
+
+  const elapsedMinutes = Math.floor(elapsedSeconds / 60);
+  if (elapsedMinutes < 60) {
+    return `${elapsedMinutes}m ago`;
+  }
+
+  const elapsedHours = Math.floor(elapsedMinutes / 60);
+  if (elapsedHours < 24) {
+    return `${elapsedHours}h ago`;
+  }
+
+  const elapsedDays = Math.floor(elapsedHours / 24);
+  if (elapsedDays < 7) {
+    return `${elapsedDays}d ago`;
+  }
+
+  return `${Math.floor(elapsedDays / 7)}w ago`;
+}
+
+function getReputation(helpfulCount: number, author: LandingPostAuthor | null) {
+  const role = `${author?.role || ""} ${author?.current_role || ""}`.toLowerCase();
+  if (role.includes("recruit")) {
+    return "Recruiter";
+  }
+  if (role.includes("found")) {
+    return "Founder";
+  }
+  if (helpfulCount >= 120) {
+    return "Top Contributor";
+  }
+  if (helpfulCount >= 80) {
+    return "Expert";
+  }
+
+  return "Contributor";
+}
+
+function buildFeaturedJob(row: LandingJobRow): FeaturedJob {
+  const company = normalizeRelation(row.companies);
+
+  return {
+    title: row.title,
+    company: company?.name || "Independent",
+    location: row.location || "Remote",
+    salary: row.salary_range || "Not disclosed",
+    type: prettifyLabel(row.job_type),
+    tags: (row.skills_required || []).slice(0, 3),
+  };
+}
+
+function buildCommunityPreview(row: LandingPostRow): CommunityPreviewPost {
+  const author = normalizeRelation(row.author);
+  const helpfulCount = row.helpful_count || 0;
+
+  return {
+    author: author?.full_name || "Community member",
+    reputation: getReputation(helpfulCount, author),
+    timestamp: formatRelativeTime(row.created_at),
+    title: row.title || "Community update",
+    content: row.content,
+    likes: helpfulCount,
+  };
+}
+
+export default async function LandingPage() {
+  const supabase = await createSupabaseClient();
+  const [{ data: jobsData }, { data: postsData }] = await Promise.all([
+    supabase
+      .from("jobs")
+      .select("title, location, salary_range, job_type, skills_required, companies(name, logo_url, website)")
+      .order("created_at", { ascending: false })
+      .limit(6),
+    supabase
+      .from("posts")
+      .select("title, content, helpful_count, created_at, author:profiles(full_name, headline, current_role, role)")
+      .order("created_at", { ascending: false })
+      .limit(4),
+  ]);
+
+  const featuredJobs = ((jobsData ?? []) as LandingJobRow[]).map(buildFeaturedJob);
+  const communityPosts = ((postsData ?? []) as LandingPostRow[]).map(buildCommunityPreview);
+
   return (
     <div className="flex flex-col bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* Hero Section */}
@@ -138,84 +298,43 @@ export default function LandingPage() {
           </ScrollReveal>
           
           <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
-            {[
-              {
-                title: "Senior Frontend Engineer",
-                company: "Vercel",
-                location: "Remote",
-                salary: "$160k - $220k",
-                type: "Full-time",
-                tags: ["React", "Next.js", "Tailwind"]
-              },
-              {
-                title: "AI Product Designer",
-                company: "Linear",
-                location: "Hybrid (NYC)",
-                salary: "$140k - $190k",
-                type: "Full-time",
-                tags: ["Figma", "AI/UX", "Product"]
-              },
-              {
-                title: "Backend Specialist (Rust)",
-                company: "Supabase",
-                location: "Remote",
-                salary: "$150k - $210k",
-                type: "Contract",
-                tags: ["Rust", "Postgres", "Go"]
-              },
-              {
-                title: "Platform Engineer",
-                company: "InfraPilot",
-                location: "Remote",
-                salary: "$135k - $185k",
-                type: "Full-time",
-                tags: ["Terraform", "Kubernetes", "AWS"]
-              },
-              {
-                title: "QA Automation Engineer",
-                company: "TestRail Labs",
-                location: "Hybrid (London)",
-                salary: "$110k - $150k",
-                type: "Full-time",
-                tags: ["Playwright", "CI/CD", "Jest"]
-              },
-              {
-                title: "DevRel / Community Engineer",
-                company: "StackCircle",
-                location: "Kochi",
-                salary: "$95k - $140k",
-                type: "Full-time",
-                tags: ["Content", "Open Source", "Speaking"]
-              }
-            ].map((job, i) => (
-              <ScrollReveal key={i} delay={i * 100}>
-                <div className="p-6 rounded-xl border border-border bg-background hover:scale-[1.02] transition-transform cursor-pointer shadow-sm hover:shadow-primary/5 hover-lift">
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="w-12 h-12 rounded-lg bg-secondary border border-border flex items-center justify-center">
-                      <Briefcase size={20} className="text-muted-foreground" />
-                    </div>
-                    <span className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded bg-primary/10 text-primary border border-primary/20">
-                      {job.type}
-                    </span>
-                  </div>
-                  <h3 className="text-lg font-bold mb-1 text-foreground">{job.title}</h3>
-                  <div className="text-sm font-medium mb-4 text-muted-foreground">{job.company} • {job.location}</div>
-                  <div className="flex flex-wrap gap-2 mb-6">
-                    {job.tags.map((tag, j) => (
-                      <span key={j} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary border border-border text-muted-foreground uppercase">
-                        {tag}
+            {featuredJobs.length > 0 ? (
+              featuredJobs.map((job, i) => (
+                <ScrollReveal key={`${job.title}-${i}`} delay={i * 100}>
+                  <div className="p-6 rounded-xl border border-border bg-background hover:scale-[1.02] transition-transform cursor-pointer shadow-sm hover:shadow-primary/5 hover-lift">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="w-12 h-12 rounded-lg bg-secondary border border-border flex items-center justify-center">
+                        <Briefcase size={20} className="text-muted-foreground" />
+                      </div>
+                      <span className="text-xs font-bold uppercase tracking-wider px-2 py-1 rounded bg-primary/10 text-primary border border-primary/20">
+                        {job.type}
                       </span>
-                    ))}
+                    </div>
+                    <h3 className="text-lg font-bold mb-1 text-foreground">{job.title}</h3>
+                    <div className="text-sm font-medium mb-4 text-muted-foreground">
+                      {job.company} • {job.location}
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-6">
+                      {job.tags.map((tag) => (
+                        <span key={tag} className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-secondary border border-border text-muted-foreground uppercase">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-bold text-foreground">{job.salary}</span>
+                      <Link href="/jobs" className="text-xs font-bold text-primary hover:underline uppercase tracking-tighter flex items-center gap-1">
+                        View Jobs <ArrowRight size={12} />
+                      </Link>
+                    </div>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm font-bold text-foreground">{job.salary}</span>
-                    <button className="text-xs font-bold text-primary hover:underline uppercase tracking-tighter flex items-center gap-1">
-                      Apply Now <ArrowRight size={12} />
-                    </button>
-                  </div>
-                </div>
-              </ScrollReveal>
-            ))}
+                </ScrollReveal>
+              ))
+            ) : (
+              <div className="md:col-span-2 xl:col-span-3 rounded-2xl border border-dashed border-border bg-background p-8 text-center text-muted-foreground">
+                No live jobs yet. Recruiters can seed the board after publishing roles.
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -234,13 +353,13 @@ export default function LandingPage() {
                 <p className="text-xl text-muted-foreground leading-relaxed mb-8">
                   Connect with thousands of developers and recruiters in our professional feed. Share insights, build your network, and stay ahead of the curve.
                 </p>
-                
+
                 <ul className="space-y-4 mb-8">
                   {[
                     "Real-time professional feed",
                     "Expert-led career advice",
                     "Direct recruiter messaging",
-                    "Verified company insights"
+                    "Verified company insights",
                   ].map((item, i) => (
                     <li key={i} className="flex items-center gap-3">
                       <div className="p-1 rounded-full bg-primary/20">
@@ -250,81 +369,53 @@ export default function LandingPage() {
                     </li>
                   ))}
                 </ul>
-                
+
                 <Link href="/community" className="text-lg font-bold flex items-center gap-2 text-primary hover:text-primary/80 transition-colors">
                   Explore Community <ArrowRight size={20} />
                 </Link>
               </div>
             </ScrollReveal>
-            
+
             <ScrollReveal delay={200}>
               <div className="relative">
                 <div className="absolute -inset-4 bg-primary/20 blur-3xl rounded-full opacity-50 animate-pulse-glow" />
                 <div className="relative space-y-4">
-                  {[
-                    {
-                      author: "Arjun Nair",
-                      reputation: "Expert",
-                      timestamp: "2h ago",
-                      title: "The rise of Rust in Kochi's Fintech",
-                      content: "Seeing a massive shift towards Rust for backend services. If you're a Go dev, now is the time to pivot!",
-                      likes: 42
-                    },
-                    {
-                      author: "Meera Krishnan",
-                      reputation: "Hiring Manager",
-                      timestamp: "5h ago",
-                      title: "Hiring AI Engineers @ Coderzon",
-                      content: "We're looking for engineers passionate about LLMs. Apply through NexHire for priority review.",
-                      likes: 89
-                    },
-                    {
-                      author: "Neha Varma",
-                      reputation: "Top Contributor",
-                      timestamp: "8h ago",
-                      title: "What actually gets replies from recruiters",
-                      content: "Clear headlines, concrete metrics, and a short story about impact beat a polished but vague profile every time.",
-                      likes: 61
-                    },
-                    {
-                      author: "Priya Lakshmi",
-                      reputation: "Recruiter",
-                      timestamp: "12h ago",
-                      title: "Interview loops should be shorter",
-                      content: "Candidates are far more responsive when the process is transparent and the next step is obvious. More companies should simplify this.",
-                      likes: 73
-                    }
-                  ].map((post, i) => (
-                    <div key={i} className="p-6 rounded-xl border border-border bg-background shadow-lg hover:border-primary/30 transition-all hover-lift">
-                      <div className="flex justify-between items-start mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center font-bold text-xs text-primary border border-border">
-                            {post.author[0]}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-foreground">{post.author}</span>
-                              <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-bold uppercase tracking-wider">
-                                {post.reputation}
-                              </span>
+                  {communityPosts.length > 0 ? (
+                    communityPosts.map((post, i) => (
+                      <div key={`${post.title}-${i}`} className="p-6 rounded-xl border border-border bg-background shadow-lg hover:border-primary/30 transition-all hover-lift">
+                        <div className="flex justify-between items-start mb-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-secondary flex items-center justify-center font-bold text-xs text-primary border border-border">
+                              {post.author[0]}
                             </div>
-                            <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
-                              {post.timestamp}
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-bold text-foreground">{post.author}</span>
+                                <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 font-bold uppercase tracking-wider">
+                                  {post.reputation}
+                                </span>
+                              </div>
+                              <div className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+                                {post.timestamp}
+                              </div>
                             </div>
                           </div>
                         </div>
-                      </div>
-                      
-                      <h3 className="font-bold text-foreground mb-2">{post.title}</h3>
-                      <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{post.content}</p>
-                      
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
-                        <div className="flex items-center gap-1 text-primary">
-                          <Users size={14} /> {post.likes} found helpful
+
+                        <h3 className="font-bold text-foreground mb-2">{post.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{post.content}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground font-medium">
+                          <div className="flex items-center gap-1 text-primary">
+                            <Users size={14} /> {post.likes} found helpful
+                          </div>
                         </div>
                       </div>
+                    ))
+                  ) : (
+                    <div className="p-6 rounded-xl border border-dashed border-border bg-background text-center text-muted-foreground">
+                      No live community posts yet. Seed the community to show activity here.
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </ScrollReveal>

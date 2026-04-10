@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 
+import { getSupabaseConfig } from "@/lib/supabase-config";
+
 const SEED_SECRET = "nexhire-seed-2026";
 
 const FALLBACK_JOBS = [
@@ -113,12 +115,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-  if (!supabaseUrl || !supabaseKey) {
-    return NextResponse.json({ error: "Supabase config missing" }, { status: 500 });
-  }
+  const { supabaseUrl, supabaseKey } = getSupabaseConfig();
 
   const supabase = createClient(supabaseUrl, supabaseKey);
 
@@ -148,64 +145,16 @@ export async function GET(request: Request) {
 
     // If no jobs exist, insert fallback jobs first
     if (jobs.length === 0) {
-      // Determine company_id for insertion
-      let companyId = null;
-      const { data: existingCompanies } = await supabase.from("companies").select("id").limit(1);
+      const { data: insertedJobs, error: seedError } = await supabase.rpc("seed_jobs_from_payload", {
+        job_payloads: FALLBACK_JOBS,
+      });
 
-      if (existingCompanies && existingCompanies.length > 0) {
-        companyId = existingCompanies[0].id;
-      } else {
-        // Need a valid owner_id to create a company; try with any profile
-        const { data: profile } = await supabase.from("profiles").select("id").limit(1).single();
-        if (profile?.id) {
-          const { data: compCreated, error: compError } = await supabase
-            .from("companies")
-            .insert({ name: "Coderzon", owner_id: profile.id, description: "Seed data company" })
-            .select("id")
-            .single();
-
-          if (compError || !compCreated?.id) {
-            throw compError || new Error("Unable to create company for seeding");
-          }
-
-          companyId = compCreated.id;
-        }
+      if (seedError) {
+        throw seedError;
       }
 
-      if (!companyId) {
-        throw new Error("No company_id available for job inserts. Seed a company first.");
-      }
-
-      for (const item of FALLBACK_JOBS) {
-        try {
-          const description = `${item.title}. ${item.description}`;
-          const embedding = await fetchEmbedding(description);
-
-          const { error: insertError } = await supabase.from("jobs").insert({
-            title: item.title,
-            description: item.description,
-            location: item.location,
-            salary_range: item.salary_range,
-            job_type: item.job_type,
-            experience_level: item.experience_level,
-            work_mode: item.work_mode,
-            skills_required: item.skills_required,
-            company_id: companyId,
-            embedding,
-          });
-
-          if (insertError) {
-            summary.errors.push(`insert ${item.title}: ${insertError.message}`);
-            continue;
-          }
-
-          summary.inserted += 1;
-        } catch (e: any) {
-          summary.errors.push(`embed/insert ${item.title}: ${e.message}`);
-        }
-      }
-
-      summary.totalJobs = FALLBACK_JOBS.length;
+      summary.inserted = insertedJobs?.length || FALLBACK_JOBS.length;
+      summary.totalJobs = insertedJobs?.length || FALLBACK_JOBS.length;
     }
 
     // Refresh job list after potential insertion
@@ -226,9 +175,10 @@ export async function GET(request: Request) {
         const embedding = await fetchEmbedding(text);
 
         const { error: updateError } = await supabase
-          .from("jobs")
-          .update({ embedding })
-          .eq("id", job.id);
+          .rpc("set_job_embedding", {
+            target_job_id: job.id,
+            embedding_input: JSON.stringify(embedding),
+          });
 
         if (updateError) {
           summary.errors.push(`update ${job.id}: ${updateError.message}`);
